@@ -10,8 +10,17 @@ const path = require('path');
 // Database simulation (in production, use a real database)
 const FEEDBACK_FILE = 'feedback-data.json';
 
+// In-memory storage for production (temporary solution)
+let feedbackData = [];
+
 // Initialize feedback data structure
 async function initializeFeedbackData() {
+    if (process.env.NODE_ENV === 'production') {
+        console.log('Using in-memory storage for feedback (data will be lost on restart)');
+        feedbackData = [];
+        return;
+    }
+    
     try {
         await fs.access(FEEDBACK_FILE);
     } catch {
@@ -20,14 +29,21 @@ async function initializeFeedbackData() {
 }
 
 // Save feedback data
-async function saveFeedback(feedbackData) {
+async function saveFeedback(newFeedback) {
     try {
-        const existingData = JSON.parse(await fs.readFile(FEEDBACK_FILE, 'utf8'));
-        existingData.push({
-            ...feedbackData,
+        const feedbackEntry = {
+            ...newFeedback,
             timestamp: new Date().toISOString(),
             id: Date.now().toString()
-        });
+        };
+
+        if (process.env.NODE_ENV === 'production') {
+            feedbackData.push(feedbackEntry);
+            return;
+        }
+
+        const existingData = JSON.parse(await fs.readFile(FEEDBACK_FILE, 'utf8'));
+        existingData.push(feedbackEntry);
         await fs.writeFile(FEEDBACK_FILE, JSON.stringify(existingData, null, 2));
     } catch (error) {
         console.error('Error saving feedback:', error);
@@ -38,7 +54,13 @@ async function saveFeedback(feedbackData) {
 // Get feedback analytics
 async function getFeedbackAnalytics() {
     try {
-        const data = JSON.parse(await fs.readFile(FEEDBACK_FILE, 'utf8'));
+        let data = [];
+        
+        if (process.env.NODE_ENV === 'production') {
+            data = feedbackData;
+        } else {
+            data = JSON.parse(await fs.readFile(FEEDBACK_FILE, 'utf8'));
+        }
         
         const analytics = {
             totalFeedback: data.length,
@@ -58,14 +80,20 @@ async function getFeedbackAnalytics() {
         
         return analytics;
     } catch (error) {
-        return { totalFeedback: 0, averageRating: 0 };
+        return { totalFeedback: 0, averageRating: 0, ratingDistribution: {1:0,2:0,3:0,4:0,5:0}, commonImprovements: [], recentFeedback: [] };
     }
 }
 
 // Generate training data from feedback
 async function generateTrainingDataFromFeedback() {
     try {
-        const data = JSON.parse(await fs.readFile(FEEDBACK_FILE, 'utf8'));
+        let data = [];
+        
+        if (process.env.NODE_ENV === 'production') {
+            data = feedbackData;
+        } else {
+            data = JSON.parse(await fs.readFile(FEEDBACK_FILE, 'utf8'));
+        }
         
         const trainingExamples = data
             .filter(item => item.rating >= 4 || item.userImprovement) // Only use good feedback

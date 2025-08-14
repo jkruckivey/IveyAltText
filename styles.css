@@ -162,8 +162,7 @@ header p {
 }
 
 .alt-text-container {
-    position: relative;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 #alt-text-output {
@@ -178,10 +177,9 @@ header p {
     background: #f7fafc;
 }
 
-.btn-copy {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+.copy-button-container {
+    margin-bottom: 1.5rem;
+    text-align: center;
 }
 
 .usage-example {
