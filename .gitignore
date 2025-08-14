@@ -99,3 +99,7 @@ Thumbs.db
 # Build files
 dist/
 build/
+
+# Feedback data (contains user data)
+feedback-data.json
+training-data-from-feedback.jsonl
