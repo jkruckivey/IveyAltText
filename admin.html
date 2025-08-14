@@ -103,18 +103,21 @@
         }
         
         .btn-admin {
-            background: #667eea;
-            color: white;
+            background: #c5b783;
+            color: #2c2c2c;
             border: none;
             padding: 0.75rem 1.5rem;
-            border-radius: 6px;
+            border-radius: 0;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
             margin: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.875rem;
         }
         
         .btn-admin:hover {
-            background: #5a67d8;
+            background: #b8a56f;
         }
         
         .loading-admin {
@@ -126,13 +129,25 @@
 </head>
 <body>
     <div class="admin-container">
-        <header style="text-align: center; margin-bottom: 3rem;">
-            <h1>Admin Dashboard</h1>
-            <p>AI Alt Text Generator Analytics</p>
-            <button id="refresh-data" class="btn-admin">Refresh Data</button>
-            <button id="generate-training" class="btn-admin">Generate Training Data</button>
-            <button id="download-training" class="btn-admin">Download Training Data</button>
-            <button id="start-finetuning" class="btn-admin">Start Fine-Tuning</button>
+        <header style="background: #fff; border-bottom: 2px solid #c5b783; padding: 2rem 3rem; border-radius: 0; margin-bottom: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="font-size: 0.7rem; background: #c5b783; color: #2c2c2c; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 0; font-weight: 900; letter-spacing: 0.1em;">IVEY</div>
+                    <div>
+                        <h1 style="font-size: 1.75rem; color: #2c2c2c; margin: 0; font-weight: 700; letter-spacing: -0.025em;">Admin Dashboard</h1>
+                        <p style="font-size: 0.95rem; color: #666666; margin: 0; font-weight: 400;">Alt Text Generator Analytics</p>
+                    </div>
+                </div>
+                <div>
+                    <a href="/" style="background: #c5b783; color: #2c2c2c; padding: 0.75rem 1.5rem; border-radius: 0; text-decoration: none; font-size: 0.875rem; font-weight: 600; border: none; text-transform: uppercase; letter-spacing: 0.05em;">← Back to Tool</a>
+                </div>
+            </div>
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
+                <button id="refresh-data" class="btn-admin">Refresh Data</button>
+                <button id="generate-training" class="btn-admin">Generate Training Data</button>
+                <button id="download-training" class="btn-admin">Download Training Data</button>
+                <button id="start-finetuning" class="btn-admin">Start Fine-Tuning</button>
+            </div>
         </header>
 
         <div id="loading" class="loading-admin">Loading analytics...</div>
