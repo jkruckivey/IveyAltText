@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - AI Alt Text Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        .rating-bar {
+            display: flex;
+            align-items: center;
+            margin: 0.5rem 0;
+        }
+        
+        .rating-label {
+            width: 30px;
+        }
+        
+        .rating-progress {
+            flex: 1;
+            height: 20px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            margin: 0 1rem;
+            overflow: hidden;
+        }
+        
+        .rating-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+        
+        .rating-count {
+            width: 40px;
+            text-align: right;
+            font-size: 0.9rem;
+        }
+        
+        .feedback-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .feedback-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .feedback-rating {
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .feedback-text {
+            margin: 0.5rem 0;
+            font-style: italic;
+        }
+        
+        .feedback-improvement {
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin: 0.5rem 0;
+        }
+        
+        .feedback-timestamp {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .btn-admin {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            margin: 0.5rem;
+        }
+        
+        .btn-admin:hover {
+            background: #5a67d8;
+        }
+        
+        .loading-admin {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <header style="text-align: center; margin-bottom: 3rem;">
+            <h1>Admin Dashboard</h1>
+            <p>AI Alt Text Generator Analytics</p>
+            <button id="refresh-data" class="btn-admin">Refresh Data</button>
+            <button id="generate-training" class="btn-admin">Generate Training Data</button>
+        </header>
+
+        <div id="loading" class="loading-admin">Loading analytics...</div>
+        
+        <div id="dashboard" style="display: none;">
+            <div class="dashboard-grid">
+                <!-- Overview Stats -->
+                <div class="dashboard-card">
+                    <h3>Overview</h3>
+                    <div class="stat-number" id="total-feedback">0</div>
+                    <div class="stat-label">Total Feedback Submissions</div>
+                    
+                    <div class="stat-number" id="average-rating" style="font-size: 2rem; margin-top: 1rem;">0.0</div>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+                
+                <!-- Rating Distribution -->
+                <div class="dashboard-card">
+                    <h3>Rating Distribution</h3>
+                    <div id="rating-distribution">
+                        <div class="rating-bar">
+                            <div class="rating-label">⭐⭐⭐⭐⭐</div>
+                            <div class="rating-progress">
+                                <div class="rating-fill" id="rating-5-fill"></div>
+                            </div>
+                            <div class="rating-count" id="rating-5-count">0</div>
+                        </div>
+                        <div class="rating-bar">
+                            <div class="rating-label">⭐⭐⭐⭐</div>
+                            <div class="rating-progress">
+                                <div class="rating-fill" id="rating-4-fill"></div>
+                            </div>
+                            <div class="rating-count" id="rating-4-count">0</div>
+                        </div>
+                        <div class="rating-bar">
+                            <div class="rating-label">⭐⭐⭐</div>
+                            <div class="rating-progress">
+                                <div class="rating-fill" id="rating-3-fill"></div>
+                            </div>
+                            <div class="rating-count" id="rating-3-count">0</div>
+                        </div>
+                        <div class="rating-bar">
+                            <div class="rating-label">⭐⭐</div>
+                            <div class="rating-progress">
+                                <div class="rating-fill" id="rating-2-fill"></div>
+                            </div>
+                            <div class="rating-count" id="rating-2-count">0</div>
+                        </div>
+                        <div class="rating-bar">
+                            <div class="rating-label">⭐</div>
+                            <div class="rating-progress">
+                                <div class="rating-fill" id="rating-1-fill"></div>
+                            </div>
+                            <div class="rating-count" id="rating-1-count">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Feedback -->
+            <div class="dashboard-card">
+                <h3>Recent Feedback</h3>
+                <div id="recent-feedback" class="feedback-list">
+                    <!-- Feedback items will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class AdminDashboard {
+            constructor() {
+                this.loadAnalytics();
+                this.bindEvents();
+            }
+
+            bindEvents() {
+                document.getElementById('refresh-data').addEventListener('click', () => this.loadAnalytics());
+                document.getElementById('generate-training').addEventListener('click', () => this.generateTrainingData());
+            }
+
+            async loadAnalytics() {
+                try {
+                    document.getElementById('loading').style.display = 'block';
+                    document.getElementById('dashboard').style.display = 'none';
+
+                    const response = await fetch('/api/admin/analytics');
+                    const data = await response.json();
+
+                    this.displayAnalytics(data);
+                    
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                } catch (error) {
+                    console.error('Error loading analytics:', error);
+                    document.getElementById('loading').innerHTML = 'Error loading analytics. Please try again.';
+                }
+            }
+
+            displayAnalytics(data) {
+                // Overview stats
+                document.getElementById('total-feedback').textContent = data.totalFeedback || 0;
+                document.getElementById('average-rating').textContent = (data.averageRating || 0).toFixed(1);
+
+                // Rating distribution
+                const total = data.totalFeedback || 1; // Avoid division by zero
+                for (let i = 1; i <= 5; i++) {
+                    const count = data.ratingDistribution?.[i] || 0;
+                    const percentage = (count / total) * 100;
+                    
+                    document.getElementById(`rating-${i}-fill`).style.width = `${percentage}%`;
+                    document.getElementById(`rating-${i}-count`).textContent = count;
+                }
+
+                // Recent feedback
+                this.displayRecentFeedback(data.recentFeedback || []);
+            }
+
+            displayRecentFeedback(feedback) {
+                const container = document.getElementById('recent-feedback');
+                
+                if (feedback.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">No feedback yet.</p>';
+                    return;
+                }
+
+                container.innerHTML = feedback.map(item => `
+                    <div class="feedback-item">
+                        <div class="feedback-rating">Rating: ${item.rating}/5 stars</div>
+                        <div class="feedback-text">Original: "${item.generatedAltText}"</div>
+                        ${item.userImprovement ? `
+                            <div class="feedback-improvement">
+                                <strong>User improvement:</strong> "${item.userImprovement}"
+                            </div>
+                        ` : ''}
+                        <div class="feedback-timestamp">
+                            ${new Date(item.timestamp).toLocaleString()}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            async generateTrainingData() {
+                try {
+                    const button = document.getElementById('generate-training');
+                    const originalText = button.textContent;
+                    button.textContent = 'Generating...';
+                    button.disabled = true;
+
+                    const response = await fetch('/api/admin/generate-training-data', {
+                        method: 'POST'
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert(`Training data generated successfully!\n${result.count} examples created.\nCheck training-data-from-feedback.jsonl file.`);
+                    } else {
+                        throw new Error(result.error || 'Failed to generate training data');
+                    }
+                } catch (error) {
+                    alert('Error generating training data: ' + error.message);
+                } finally {
+                    const button = document.getElementById('generate-training');
+                    button.textContent = 'Generate Training Data';
+                    button.disabled = false;
+                }
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            new AdminDashboard();
+        });
+    </script>
+</body>
+</html>

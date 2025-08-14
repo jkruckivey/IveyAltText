@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Alt Text Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI Alt Text Generator</h1>
+            <p>Upload an image and get AI-generated alt text for accessibility</p>
+        </header>
+
+        <main>
+            <div class="upload-section">
+                <div id="drop-zone" class="drop-zone">
+                    <div class="drop-zone-content">
+                        <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        <p>Drag and drop your image here, or click to select</p>
+                        <p class="file-info">Supports: JPG, PNG, GIF, WebP (max 5MB)</p>
+                    </div>
+                    <input type="file" id="file-input" accept="image/*" hidden>
+                </div>
+            </div>
+
+            <div id="preview-section" class="preview-section" style="display: none;">
+                <div class="image-preview">
+                    <img id="preview-image" src="" alt="Preview">
+                </div>
+                <div class="controls">
+                    <button id="generate-btn" class="btn-primary">Generate Alt Text</button>
+                    <button id="clear-btn" class="btn-secondary">Clear</button>
+                </div>
+            </div>
+
+            <div id="result-section" class="result-section" style="display: none;">
+                <h3>Generated Alt Text:</h3>
+                <div class="alt-text-container">
+                    <textarea id="alt-text-output" readonly></textarea>
+                    <button id="copy-btn" class="btn-copy">Copy to Clipboard</button>
+                </div>
+                
+                <!-- Feedback Section -->
+                <div class="feedback-section">
+                    <h4>Help us improve! Rate this alt text:</h4>
+                    <div class="rating-stars">
+                        <span class="star" data-rating="1">⭐</span>
+                        <span class="star" data-rating="2">⭐</span>
+                        <span class="star" data-rating="3">⭐</span>
+                        <span class="star" data-rating="4">⭐</span>
+                        <span class="star" data-rating="5">⭐</span>
+                    </div>
+                    <div class="improvement-section" style="display: none;">
+                        <label for="improvement-text">How would you improve it?</label>
+                        <textarea id="improvement-text" placeholder="Enter your improved version of the alt text..."></textarea>
+                        <button id="submit-feedback" class="btn-primary">Submit Feedback</button>
+                    </div>
+                </div>
+                
+                <div class="usage-example">
+                    <h4>HTML Usage:</h4>
+                    <code id="html-example"></code>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 AI Alt Text Generator. Made with AI for accessibility.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
