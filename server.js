@@ -127,6 +127,50 @@ async function generateMockAltText() {
 // Setup feedback routes
 setupFeedbackRoutes(app);
 
+// Training data management
+const TrainingDataManager = require('./training-data-manager');
+const trainingManager = new TrainingDataManager();
+
+// Generate and download training data
+app.get('/api/admin/training-data', async (req, res) => {
+    try {
+        const result = await trainingManager.generateCompleteTrainingData();
+        
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Disposition', 'attachment; filename="alt-text-training-data.jsonl"');
+        res.send(result.data);
+        
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to generate training data' });
+    }
+});
+
+// Start fine-tuning process
+app.post('/api/admin/start-fine-tuning', async (req, res) => {
+    try {
+        const result = await trainingManager.createFineTunedModel();
+        res.json({ 
+            success: true, 
+            message: 'Fine-tuning job started',
+            ...result 
+        });
+        
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Check fine-tuning status
+app.get('/api/admin/fine-tuning-status/:jobId', async (req, res) => {
+    try {
+        const status = await trainingManager.checkFineTuningStatus(req.params.jobId);
+        res.json(status);
+        
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to check fine-tuning status' });
+    }
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
     res.json({ 

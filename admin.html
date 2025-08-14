@@ -131,6 +131,8 @@
             <p>AI Alt Text Generator Analytics</p>
             <button id="refresh-data" class="btn-admin">Refresh Data</button>
             <button id="generate-training" class="btn-admin">Generate Training Data</button>
+            <button id="download-training" class="btn-admin">Download Training Data</button>
+            <button id="start-finetuning" class="btn-admin">Start Fine-Tuning</button>
         </header>
 
         <div id="loading" class="loading-admin">Loading analytics...</div>
@@ -210,6 +212,8 @@
             bindEvents() {
                 document.getElementById('refresh-data').addEventListener('click', () => this.loadAnalytics());
                 document.getElementById('generate-training').addEventListener('click', () => this.generateTrainingData());
+                document.getElementById('download-training').addEventListener('click', () => this.downloadTrainingData());
+                document.getElementById('start-finetuning').addEventListener('click', () => this.startFineTuning());
             }
 
             async loadAnalytics() {
@@ -296,6 +300,59 @@
                 } finally {
                     const button = document.getElementById('generate-training');
                     button.textContent = 'Generate Training Data';
+                    button.disabled = false;
+                }
+            }
+
+            async downloadTrainingData() {
+                try {
+                    const response = await fetch('/api/admin/training-data');
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'alt-text-training-data.jsonl';
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                        alert('Training data downloaded successfully!');
+                    } else {
+                        throw new Error('Failed to download training data');
+                    }
+                } catch (error) {
+                    alert('Error downloading training data: ' + error.message);
+                }
+            }
+
+            async startFineTuning() {
+                if (!confirm('Start fine-tuning process? This will incur costs on your OpenAI account.')) {
+                    return;
+                }
+
+                try {
+                    const button = document.getElementById('start-finetuning');
+                    const originalText = button.textContent;
+                    button.textContent = 'Starting Fine-Tuning...';
+                    button.disabled = true;
+
+                    const response = await fetch('/api/admin/start-fine-tuning', {
+                        method: 'POST'
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert(`Fine-tuning started!\nJob ID: ${result.jobId}\nTraining Examples: ${result.trainingExamples}\n\nCheck OpenAI dashboard for progress.`);
+                    } else {
+                        throw new Error(result.error || 'Failed to start fine-tuning');
+                    }
+                } catch (error) {
+                    alert('Error starting fine-tuning: ' + error.message);
+                } finally {
+                    const button = document.getElementById('start-finetuning');
+                    button.textContent = 'Start Fine-Tuning';
                     button.disabled = false;
                 }
             }
